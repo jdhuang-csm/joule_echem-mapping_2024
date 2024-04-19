@@ -1,0 +1,5 @@
+**/.ipynb_checkpoints/**
+**/.idea/**
+**/__pycache__/**
+hybrid-drt_240419/hybdrt/mapping/stan_models/*.hpp
+hybrid-drt_240419/hybdrt/mapping/stan_models/*.exe
