@@ -1,0 +1,1 @@
+Data in this folder were collected from a commercial Li-ion battery (Molicel INR-18650-M35A) at room temperature.
