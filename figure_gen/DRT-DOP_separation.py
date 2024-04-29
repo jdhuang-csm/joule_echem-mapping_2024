@@ -62,6 +62,11 @@ data_kw = dict(facecolors='none', edgecolors=[0.1] * 3)
 ff.set_plotdir(Path(__file__).parent.joinpath('./figures'))
 
 
+# ========================================================================================
+# This section sets up functions to perform DRT estimation via ordinary ridge regression
+# and visualize the results without using the hybrid-drt package.
+# ========================================================================================
+
 # Plotting functions
 # -------------------
 def plot_nyquist(z, ax=None, label='', plot_func='scatter', set_aspect_ratio=True,
@@ -593,6 +598,24 @@ def plot_solution(x_drt, x_dop, matrices, num_rq, axes=None):
     
     return axes
 
+# ===========================================================================================
+# With all functions defined, we can perform some example inversions and examine the results.
+# ===========================================================================================
+"""
+See Section S4.1 of the supplemental text and DRT_nullspace.ipynb for an accompanying discussion. 
+In brief, ambiguity exists in the DRT-DOP inversion because the DRT and the DOP are both capable
+of reproducing constant-phase impedance. This can result in non-meaningful DRT-DOP inversions
+in which a constant-phase feature, such as a Warburg element, is fitted with a combination of 
+DRT and DOP peaks. However, the DOP is not capable of reproducing RC-type impedance. Therefore, 
+the ambiguity can be resolved by penalizing the DRT more strongly than the DOP, such that the DOP
+will always describe any constant-phase features that exist, while the DRT is suppressed in the 
+corresponding timescale regions. This is especially visible when we use 2nd-order regularization
+in the examples shown below: when the DRT and DOP regularization penalties are equal, the DRT
+partially fits the low-frequency Warburg element, resulting in an inaccurate DOP phase estimate.
+However, when the DRT penalty is greater than the DOP penalty, the DRT psuedo-peak at long
+timescales is suppressed and the DOP estimate moves to the correct phase angle.
+"""
+
 # Figure generation
 # ===================
 for i, (z_noisy, circuit) in enumerate(zip([z_rqw_noisy, z_2rq_noisy], ['RQ-Warburg', 'RQ-RQ'])):
@@ -735,9 +758,10 @@ for i, (z_noisy, circuit) in enumerate(zip([z_rqw_noisy, z_2rq_noisy], ['RQ-Warb
 
     # ff.savefig(fig, f'{circuit}_d2_ratio')
 
-
-# Code below is for running full model - requires hybdrt package
-# ==============================================================
+# ===========================================================================================
+# This section applies the full hierarchical Bayesian model in hybrid-drt to the same examples
+# to show that the same principle applies, but with much improved regularization behavior.
+# ===========================================================================================
 from hybdrt.models import DRT
 import hybdrt.plotting as hplt
 

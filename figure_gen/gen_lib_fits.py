@@ -1,58 +1,25 @@
 import os
 import numpy as np
-import matplotlib as mpl
-import matplotlib.pyplot as plt
-from copy import deepcopy
-import glob
 from pathlib import Path
-from scipy.optimize import least_squares
-from scipy.integrate import cumtrapz
-from scipy.special import factorial
-from scipy import ndimage
-from skimage import filters
-import time
-import seaborn as sn
-import pandas as pd
-import pickle
 
-from cmdstanpy import CmdStanModel
-
-from sklearn.gaussian_process import GaussianProcessRegressor, kernels
-from sklearn.preprocessing import StandardScaler
-from sklearn.inspection import PartialDependenceDisplay, partial_dependence
-from sklearn.pipeline import Pipeline
-
-from alepython import ale_plot, ale #_first_order_ale_quant, _second_order_ale_quant
-
-import hybdrt
-from hybdrt.models import DRT
-from hybdrt.models.sequential import fit_sequence
 import hybdrt.fileload as fl
-import hybdrt.plotting as hplt
-import hybdrt.preprocessing as pp
-
 from hybdrt import mapping
 
 import battmap.fit
-import battmap.dataload as dl
-from battmap import sequence, capacity, surface
 from battmap.reader import ReaderCollection
 
-# Set paths
-# datadir = Path('G:\\My Drive\\Jake\\Gamry data\\CFCC_4-2\\Batteries\\Molicel_M35A\\Cell1\\hybrid-discharge')
 
-
-# Set fit path
+# Set path in which to save fits
 script_path = Path(__file__)
 fit_path = script_path.parent.joinpath('fits', 'LIB')
 
 # Path in which data is located
 datadir = script_path.parent.joinpath('../data/LIB/mapping')
 
-
+# Rated cell capacity (mAh)
 tot_cap = 3400
 
-# Make DRTMD instance
+# Make DRTMD instance and set fit parameters
 tau_supergrid = np.logspace(-7, 3, 101)
 basis_nu = np.concatenate([np.linspace(-1, -0.4, 25), np.linspace(0.4, 1, 25)])
 mrt = mapping.DRTMD(
@@ -63,6 +30,8 @@ mrt.fit_dop = True
 mrt.fit_ohmic = True
 mrt.fit_capacitance = False
 mrt.fit_inductance = False
+
+# State variable dimensions
 mrt.psi_dim_names = ['c_rate', 'soc', 'time_under_load', 'total_time']
 
 
@@ -72,17 +41,6 @@ test_reader = ReaderCollection()
 mrt.chrono_reader = test_reader
 
 
-# mrt_delta = deepcopy(mrt)
-# mrt_rbf = deepcopy(mrt)
-
-# mrt_delta.nu_basis_type = 'delta'
-# mrt_delta.fit_kw = {
-#     'nonneg': True,
-#     'dop_l2_lambda_0': 0,
-#     'dop_l1_lambda_0': 10
-# }
-
-# mrt_rbf.nu_basis_type = 'gaussian'
 mrt.fit_kw = {
     'nonneg': True,
     'dop_l2_lambda_0': 50,
@@ -94,14 +52,13 @@ wf = np.sqrt(1.5)
 mrt.fit_kw['chrono_weight_factor'] = 1 / wf
 mrt.fit_kw['eis_weight_factor'] = wf
 
-# RBF7: max_num_obs = 60, tau_supergrid = np.logspace(-7, 3, 101), iw_l2_lambda_0=1e-6
 
 # Get starting timestamp to track total elapsed time
 start_dir = next(datadir.glob('Test1*'))
 start_file = next(start_dir.glob('Conditioning_DISCHARGE*.DTA'))
 start_timestamp = fl.get_timestamp(start_file)
 
-
+# Load and fit raw data
 for test_id in np.arange(1, 16):
     if test_id <= 5:
         trust_charge_finish = False

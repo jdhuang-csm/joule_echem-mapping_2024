@@ -5,3 +5,4 @@
 **/*.exe
 /data/LIB/
 /data/PCEC/
+/figure_gen/graphabs.ipynb

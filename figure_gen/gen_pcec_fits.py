@@ -1,49 +1,27 @@
 import os
 import sys
 import numpy as np
-import matplotlib.pyplot as plt
-import matplotlib as mpl
 from pathlib import Path
 import time
-from copy import deepcopy
-from scipy import ndimage
-from scipy.interpolate import interp1d
-from scipy.integrate import cumtrapz
-import itertools
-import pickle
 
 
-from skimage import filters, restoration
-
-import pccmap
-import pccmap.dataload as dl
-from pccmap import clean
 from pccmap import fit as pmfit
-import pccmap.plot as pcp
     
 import hybdrt
 import hybdrt.fileload as fl
-from hybdrt.models import DRT
 from hybdrt.mapping import DRTMD
-import hybdrt.plotting as hplt
-from hybdrt.utils import stats
-from hybdrt import mapping
-from hybdrt import filters as hf
-from hybdrt.utils.array import nearest_index
 
 # Cell area for current density calculation
 d_cell = 0.25
 a_cell = np.pi * (d_cell * 2.54/ 2) ** 2
 
-
+# Set paths
 script_path = Path(__file__)
 fit_path = script_path.parent.joinpath('fits', 'PCEC')
 
-# cell_path = Path('G:\\My Drive\\Jake\\Gamry data\\CFCC_4-2\\Pub\\Fine-Fine\\220320_220311-2b')
-# wet_path = cell_path.joinpath('run3_comprehensive-wet')
 datadir = script_path.parent.joinpath('../data/PCEC/mapping')
 
-print(os.path.exists(datadir))
+print('Data path exists:', os.path.exists(datadir))
 cell_id = 'FF3'
 
 # Set up multi-dimensional DRT (DRTMD)
