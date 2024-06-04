@@ -2,7 +2,7 @@
 
 This repository contains raw data and open-source code associated with the following research article:
 
-Jake D. Huang, Charles Meisel, Andriy Zakutayev, and Ryan O'Hayre. Rapid mapping of electrochemical processes in energy conversion devices. *Joule*.
+Jake D. Huang, Charlie Meisel, Neal P. Sullivan, Andriy Zakutayev, and Ryan O'Hayre. Rapid mapping of electrochemical processes in energy conversion devices. *Joule*.
 
 The code libraries provided here are frozen to ensure reproducibility of the published results. The latest versions of the packages can be found in the corresponding GitHub repositories listed below.
 
